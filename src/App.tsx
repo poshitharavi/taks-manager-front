@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Dashboard from "./pages/TaskList";
+import TaskList from "./pages/TaskList";
 import { UserProvider } from "./context/UserContext";
-import PrivateRoute from "./components/PrivateRoute"; // PrivateRoute component for protected routes
+import PrivateRoute from "./components/PrivateRoute";
 
 const App: React.FC = () => {
   return (
@@ -17,7 +17,7 @@ const App: React.FC = () => {
             path="/"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <TaskList />
               </PrivateRoute>
             }
           />
@@ -25,7 +25,7 @@ const App: React.FC = () => {
             path="/task-list"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <TaskList />
               </PrivateRoute>
             }
           />
