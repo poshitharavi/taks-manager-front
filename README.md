@@ -41,7 +41,7 @@ This is used for configuring the API base URL for all API requests.
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/poshitharavi/taks-manager-front.git
+   git clone https://github.com/poshitharavi/task-manager-front.git
    ```
 2. **Navigate to the project directory**:
    ```bash
