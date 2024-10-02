@@ -33,3 +33,17 @@ export const saveTask = async (
     throw error;
   }
 };
+
+export const fetchTaskDetails = async (taskId: number, token: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/task/details/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching details for task ${taskId}:`, error);
+    throw error;
+  }
+};

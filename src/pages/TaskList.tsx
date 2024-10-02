@@ -13,6 +13,7 @@ import { UserContext } from "../context/UserContext";
 import { fetchAllTasks } from "../api";
 import AddTaskModal from "../components/AddTaskModal";
 import moment from "moment";
+import TaskDetailModal from "../components/TaskDetailModal";
 
 interface Task {
   id: number;
@@ -37,9 +38,14 @@ const TaskList: React.FC = () => {
     pageSize: 5,
   });
   const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
+  const [openTaskDetailModal, setOpenTaskDetailModal] = useState(false);
+  const [taskId, setTaskId] = useState(0);
 
   const handleOpenAddTaskModal = () => setOpenAddTaskModal(true);
   const handleCloseAddTaskModal = () => setOpenAddTaskModal(false);
+
+  const handleOpenTaskDetailModal = () => setOpenTaskDetailModal(true);
+  const handleCloseTaskDetailModal = () => setOpenTaskDetailModal(false);
 
   const { user } = useContext(UserContext)!;
 
@@ -70,7 +76,8 @@ const TaskList: React.FC = () => {
   };
 
   const handleDetails = (taskId: number) => {
-    alert(`Task Details for ID: ${taskId}`);
+    setTaskId(taskId);
+    handleOpenTaskDetailModal();
   };
 
   const handleDelete = (taskId: number) => {
@@ -200,6 +207,12 @@ const TaskList: React.FC = () => {
           user={user}
           open={openAddTaskModal}
           handleClose={handleCloseAddTaskModal}
+        />
+        <TaskDetailModal
+          user={user}
+          open={openTaskDetailModal}
+          handleClose={handleCloseTaskDetailModal}
+          taskId={taskId}
         />
         <DataGrid
           rows={tasks}
