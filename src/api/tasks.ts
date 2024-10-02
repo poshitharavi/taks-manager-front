@@ -47,3 +47,44 @@ export const fetchTaskDetails = async (taskId: number, token: string) => {
     throw error;
   }
 };
+
+export const updateTask = async (
+  taskId: number,
+  taskData: {
+    title: string;
+    priority: string;
+    dueDate: string;
+    status: string;
+  },
+  token: string
+) => {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/task/update/${taskId}`,
+      taskData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating task ${taskId}:`, error);
+    throw error;
+  }
+};
+
+export const deleteTask = async (taskId: number, token: string) => {
+  try {
+    const response = await axios.delete(`${API_URL}/task/delete/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting task ${taskId}:`, error);
+    throw error;
+  }
+};

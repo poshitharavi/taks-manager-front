@@ -10,7 +10,7 @@ import {
   Container,
 } from "@mui/material";
 import { UserContext } from "../context/UserContext";
-import { fetchAllTasks } from "../api";
+import { deleteTask, fetchAllTasks } from "../api";
 import AddTaskModal from "../components/AddTaskModal";
 import moment from "moment";
 import TaskDetailModal from "../components/TaskDetailModal";
@@ -80,16 +80,31 @@ const TaskList: React.FC = () => {
     handleOpenTaskDetailModal();
   };
 
-  const handleDelete = (taskId: number) => {
-    alert(`Task deleted with ID: ${taskId}`);
-    // Implement actual delete logic here
+  const handleDelete = async (taskId: number) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete task with ID: ${taskId}?`
+    );
+    if (!confirmed) return;
+
+    if (!user) {
+      alert("You need to be logged in to delete a task.");
+      return;
+    }
+
+    try {
+      await deleteTask(taskId, user.token);
+      alert("Task deleted successfully!");
+      loadTasks();
+    } catch (error) {
+      alert("Failed to delete the task.");
+    }
   };
 
   useEffect(() => {
-    if (!openAddTaskModal) {
+    if (!openAddTaskModal && !openTaskDetailModal) {
       loadTasks();
     }
-  }, [openAddTaskModal, user]);
+  }, [openAddTaskModal, user, openTaskDetailModal]);
 
   const columns: GridColDef[] = [
     {
