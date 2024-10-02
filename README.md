@@ -41,7 +41,7 @@ This is used for configuring the API base URL for all API requests.
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/react-task-management-app.git
+   git clone https://github.com/poshitharavi/taks-manager-front.git
    ```
 2. **Navigate to the project directory**:
    ```bash
@@ -83,6 +83,7 @@ In the project directory, you can run the following scripts:
   - **api/**: Axios calls for handling API requests (fetching, creating, updating, and deleting tasks).
   - **components/**: Contains reusable components such as modals, forms, and grids.
   - **context/**: Handles user state and authentication across the app.
+  - **pages/**: All the web pages are available in here.
   - **App.tsx**: Main entry point for the application.
 
 ## Key Functionality
