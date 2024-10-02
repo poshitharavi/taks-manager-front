@@ -12,6 +12,7 @@ import {
 import { UserContext } from "../context/UserContext";
 import { fetchAllTasks } from "../api";
 import AddTaskModal from "../components/AddTaskModal";
+import moment from "moment";
 
 interface Task {
   id: number;
@@ -35,41 +36,53 @@ const TaskList: React.FC = () => {
     page: 0,
     pageSize: 5,
   });
-  const [open, setOpen] = useState(false);
+  const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpenAddTaskModal = () => setOpenAddTaskModal(true);
+  const handleCloseAddTaskModal = () => setOpenAddTaskModal(false);
 
   const { user } = useContext(UserContext)!;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  useEffect(() => {
-    const loadTasks = async () => {
-      if (!user) return;
+  const loadTasks = async () => {
+    if (!user) return;
 
-      setLoading(true);
-      try {
-        const tasksData = await fetchAllTasks(user.token);
-        if (tasksData.body && tasksData.body.tasks) {
-          const modifiedTasks = tasksData.body.tasks.map((task: Task) => ({
-            ...task,
-            name: task.user.name,
-          }));
-          setTasks(modifiedTasks);
-        } else {
-          console.error("Unexpected data format:", tasksData);
-        }
-      } catch (error) {
-        console.error("Failed to load tasks:", error);
-      } finally {
-        setLoading(false);
+    setLoading(true);
+    try {
+      const tasksData = await fetchAllTasks(user.token);
+      if (tasksData.body && tasksData.body.tasks) {
+        const modifiedTasks = tasksData.body.tasks.map((task: Task) => ({
+          ...task,
+          name: task.user.name,
+          dueDate: moment(task.dueDate).format("YYYY-MM-DD"),
+        }));
+        setTasks(modifiedTasks);
+      } else {
+        console.error("Unexpected data format:", tasksData);
       }
-    };
+    } catch (error) {
+      console.error("Failed to load tasks:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    loadTasks();
-  }, [user]);
+  const handleDetails = (taskId: number) => {
+    alert(`Task Details for ID: ${taskId}`);
+  };
+
+  const handleDelete = (taskId: number) => {
+    alert(`Task deleted with ID: ${taskId}`);
+    // Implement actual delete logic here
+  };
+
+  useEffect(() => {
+    if (!openAddTaskModal) {
+      loadTasks();
+    }
+  }, [openAddTaskModal, user]);
 
   const columns: GridColDef[] = [
     {
@@ -87,7 +100,13 @@ const TaskList: React.FC = () => {
     {
       field: "priority",
       headerName: "Priority",
-      flex: isMobile ? 1 : 1,
+      flex: isMobile ? 1 : 0.4,
+      editable: false,
+    },
+    {
+      field: "dueDate",
+      headerName: "Due Date",
+      flex: isMobile ? 1 : 0.4,
       editable: false,
     },
     {
@@ -103,6 +122,36 @@ const TaskList: React.FC = () => {
       flex: isMobile ? 0.7 : 0.4,
       editable: false,
       type: "string",
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 200,
+      sortable: false,
+      renderCell: (params) => {
+        const taskId = params.row.id;
+        return (
+          <Box>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => handleDetails(taskId)}
+              sx={{ marginRight: 1 }}
+            >
+              Details
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() => handleDelete(taskId)}
+            >
+              Delete
+            </Button>
+          </Box>
+        );
+      },
     },
   ];
 
@@ -142,12 +191,16 @@ const TaskList: React.FC = () => {
             variant="contained"
             color="primary"
             sx={{ padding: "10px 20px" }}
-            onClick={handleOpen}
+            onClick={handleOpenAddTaskModal}
           >
             Add Task
           </Button>
         </Box>
-        <AddTaskModal user={user} open={open} handleClose={handleClose} />
+        <AddTaskModal
+          user={user}
+          open={openAddTaskModal}
+          handleClose={handleCloseAddTaskModal}
+        />
         <DataGrid
           rows={tasks}
           columns={columns}

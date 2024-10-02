@@ -6,17 +6,18 @@ import {
   TextField,
   MenuItem,
   Typography,
+  Grid,
 } from "@mui/material";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-// import moment, { Moment } from "moment"; // Import moment
 import { saveTask } from "../api";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { Moment } from "moment";
+import moment from "moment";
 
-// Define an interface for the user
 interface User {
   token: string;
 }
 
-// Define props for the AddTaskModal component
 interface AddTaskModalProps {
   user: User | null;
   open: boolean;
@@ -30,7 +31,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
 }) => {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("medium");
-  //   const [dueDate, setDueDate] = useState<Moment | null>(null); // Use Moment type
+  const [dueDate, setDueDate] = React.useState<Moment | null>(moment());
 
   const handleSubmit = async () => {
     if (!title || !user) {
@@ -41,7 +42,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
     const taskData = {
       title,
       priority,
-      dueDate: "2027-10-02",
+      dueDate: dueDate
+        ? dueDate.format("YYYY-MM-DD")
+        : moment().format("YYYY-MM-DD"),
     };
 
     try {
@@ -84,45 +87,45 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
           <Typography variant="h6" id="add-task-modal-title" sx={{ mb: 2 }}>
             Add New Task
           </Typography>
-          <TextField
-            fullWidth
-            label="Title"
-            variant="outlined"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            select
-            fullWidth
-            label="Priority"
-            variant="outlined"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            sx={{ mb: 2 }}
-          >
-            <MenuItem value="low">Low</MenuItem>
-            <MenuItem value="medium">Medium</MenuItem>
-            <MenuItem value="high">High</MenuItem>
-          </TextField>
-          {/* <DatePicker
-            label="Due Date"
-            value={dueDate ? dueDate.toDate() : null} // Convert Moment to Date for DatePicker
-            onChange={(newValue) => {
-              if (newValue) {
-                setDueDate(moment(newValue)); // Set due date as a Moment object
-              } else {
-                setDueDate(null); // Handle null case
-              }
-            }}
-            renderInput={(params: any) => (
-              <TextField {...params} fullWidth sx={{ mb: 2 }} />
-            )}
-          /> */}
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Title"
+                variant="outlined"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                select
+                fullWidth
+                label="Priority"
+                variant="outlined"
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+              >
+                <MenuItem value="low">Low</MenuItem>
+                <MenuItem value="medium">Medium</MenuItem>
+                <MenuItem value="high">High</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={6}>
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  label="Due Date"
+                  value={dueDate}
+                  onChange={(newValue) => setDueDate(newValue)}
+                />
+              </LocalizationProvider>
+            </Grid>
+          </Grid>
           <Button
             variant="contained"
             color="primary"
             fullWidth
+            sx={{ mt: 3 }}
             onClick={handleSubmit}
           >
             Save Task
